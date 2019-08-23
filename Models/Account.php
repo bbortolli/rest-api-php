@@ -10,7 +10,7 @@ function getAccount($params) {
 
     $id = $params[0];
 
-    if (!$id) {
+    if (!filter_var($id, FILTER_VALIDATE_INT) || !$id) {
         http_response_code(200);
         $response = array(
             'message' => 'Please inform ID',
@@ -29,9 +29,8 @@ function getAccount($params) {
 }
 
 function addAccount($params) {
-    
-    $decodedParams = json_decode($params);
-    $res = save('accounts', $decodedParams);
+
+    $res = save('accounts', $params);
 
     http_response_code(200);
 
@@ -43,8 +42,7 @@ function addAccount($params) {
 
 function updateAccount($params) {
 
-    $decodedParams = json_decode($params);
-    $res = update('accounts', $decodedParams);
+    $res = update('accounts', $params);
 
     http_response_code(200);
 
@@ -58,7 +56,7 @@ function removeAccount($params) {
 
     $id = $params[0];
     
-    if (!$id) {
+    if (!filter_var($id, FILTER_VALIDATE_INT) || !$id) {
         http_response_code(200);
         $response = array(
             'message' => 'Please inform ID');
@@ -86,8 +84,10 @@ function getDateTransactions($params) {
         WHERE acc._id = t.acc_id 
         AND acc.id = " . $id .
         " AND t.date >= STR_TO_DATE(" . $start . ", '%Y-%m-%d')" .
-        " AND t.date <= " . $end; 
+        " AND t.date <= STR_TO_DATE(" . $end . ", '%Y-%m-%d')";
 
+    echo $sql;
+    
     try {
         $result = $database->query($sql);
 	    if ($result->num_rows > 0) {

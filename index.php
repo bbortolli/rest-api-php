@@ -28,7 +28,7 @@ if (isset($_REQUEST)) {
     $param = $route;
 
     // Verify param
-    /* if( filter_var($param, FILTER_VALIDATE_INT) ) {
+    /*if( filter_var($param, FILTER_VALIDATE_INT) ) {
 
         http_response_code(400);
 
@@ -36,7 +36,7 @@ if (isset($_REQUEST)) {
             'statusMessage' => "Wrong params");
         echo json_encode($response);
         return;
-    } */
+    }*/
 
     // Verify if model NO exist
     if(!in_array($model, $myModels, false)) {
@@ -76,15 +76,29 @@ if (isset($_REQUEST)) {
 
     // GET and DELETE calls a function sending the param received from the URL
     if ($method === 'GET' || $method === 'DELETE') {
+
         $response = call_user_func($controller, $param);
         echo $response;
         return;
     }
     // POST and PUT receive params from php input and calls a function sending those params
     else if ($method === 'POST' || $method === 'PUT') {
+
         $body = file_get_contents('php://input');
-        $response = call_user_func($controller, $body);
-        echo $response;
-        return;
+        $checkedBody = json_decode($body);
+        if (json_last_error() !== 0) {
+
+            http_response_code(406);
+
+            $response = array(
+                'statusMessage' => 'Wrong entry params');
+            echo json_encode($response);
+            return;
+        }
+        else {
+            $response = call_user_func($controller, $checkedBody);
+            echo $response;
+            return;
+        }
     }
 }
