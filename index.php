@@ -25,10 +25,10 @@ if (isset($_REQUEST)) {
 
     // Get params
     $param = array();
-    $param = $route[0];
+    $param = $route;
 
     // Verify param
-    if( !filter_var($param, FILTER_VALIDATE_INT) ) {
+    /* if( filter_var($param, FILTER_VALIDATE_INT) ) {
 
         http_response_code(400);
 
@@ -36,7 +36,7 @@ if (isset($_REQUEST)) {
             'statusMessage' => "Wrong params");
         echo json_encode($response);
         return;
-    }
+    } */
 
     // Verify if model NO exist
     if(!in_array($model, $myModels, false)) {

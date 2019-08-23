@@ -9,7 +9,8 @@ $myRoutes = [
         'getAccount' => 'GET', 
         'addAccount' => 'POST',
         'updateAccount' => 'PUT',
-        'removeAccount' => 'DELETE'
+        'removeAccount' => 'DELETE',
+        'getDateTransactions' => 'GET'
     ],
     'Transaction' => [
         'getTransaction' => 'GET',
