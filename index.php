@@ -74,7 +74,6 @@ if (isset($_REQUEST)) {
         return;
     }
 
-
     // GET and DELETE calls a function sending the param received from the URL
     if ($method === 'GET' || $method === 'DELETE') {
         $response = call_user_func($controller, $param);
@@ -86,13 +85,6 @@ if (isset($_REQUEST)) {
         $body = file_get_contents('php://input');
         $response = call_user_func($controller, $body);
         echo $response;
-        return;
-    }
-    else {
-        http_response_code(405);
-        $response = array(
-            'statusMessage' => 'Method Not Allowed');
-        echo json_encode($response);
         return;
     }
 }

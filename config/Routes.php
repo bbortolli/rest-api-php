@@ -1,6 +1,9 @@
 <?php
 
+// Insert all models here
 $myModels = ['Account', 'Transaction'];
+
+// Insert all routes here
 $myRoutes = [
     'Account' => [
         'getAccount' => 'GET', 
