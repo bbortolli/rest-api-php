@@ -4,12 +4,11 @@ namespace App;
 
 header('Content-Type: application/json; charset: utf-8');
 
+require 'config/Routes.php';
 require 'Models/Account.php';
 require 'Models/Transaction.php';
 use App\Models\Account;
 use App\Models\Transaction;
-
-$myRoutes = ['Account', 'Transaction'];
 
 if (isset($_REQUEST)) {
 
@@ -25,15 +24,27 @@ if (isset($_REQUEST)) {
     array_shift($route);
 
     // Get params
-    $params = array();
-    $params = $route[0];
+    $param = array();
+    $param = $route[0];
 
-    if(!in_array($model, $myRoutes, false)) {
+    // Verify param
+    if( !filter_var($param, FILTER_VALIDATE_INT) ) {
 
-        // Verify if model exist
+        http_response_code(400);
+
         $response = array(
-            'status' => '400',
-            'statusMessage' => 'Bad Request');
+            'statusMessage' => "Wrong params");
+        echo json_encode($response);
+        return;
+    }
+
+    // Verify if model NO exist
+    if(!in_array($model, $myModels, false)) {
+
+        http_response_code(400);
+
+        $response = array(
+            'statusMessage' => "Target don't exist");
         echo json_encode($response);
         return;
     }
@@ -41,26 +52,49 @@ if (isset($_REQUEST)) {
     // Set expected control
     $controller = 'App\\Models\\' . $model . '\\' . $control;
 
-    // Verify if control exist
+    // Verify if control NO exist
     if(!function_exists($controller)) {
+
+        http_response_code(400);
+
         $response = array(
-            'status' => '400',
-            'statusMessage' => 'Bad Request');
+            'statusMessage' => "Target don't exist");
         echo json_encode($response);
         return;
     }
 
-    if ($method === 'GET') {
-        $response = call_user_func($controller, $params);
+    if ($myRoutes[$model][$control] !== $method) {
+
+        http_response_code(405);
+
+        $response = array(
+            'statusMessage' => 'Method Not Allowed');
+        echo json_encode($response);
+        return;
+    }
+
+    if ($method === 'GET' || $method === 'DELETE') {
+        $response = call_user_func($controller, $param);
         echo $response;
         return;
     }
 
-    if ($method === 'POST') {
+    else if ($method === 'POST') {
         //$response = call_user_func($controller, $params);
         $body = file_get_contents('php://input');
         $response = call_user_func($controller, $body);
         echo $response;
+        return;
+    }
+
+    else if ($method === 'PUT') {
+
+    }
+    else {
+        http_response_code(405);
+        $response = array(
+            'statusMessage' => 'Method Not Allowed');
+        echo json_encode($response);
         return;
     }
 }

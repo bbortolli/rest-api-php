@@ -37,15 +37,13 @@ function find( $table = null, $id = null) {
 	  } else {
 	    
 		$sql = "SELECT * FROM " . $table;
-	    $result = $database->query($sql);
-	    
+		$result = $database->query($sql);
 	    if ($result->num_rows > 0) {
 	      $found = $result->fetch_all(MYSQLI_ASSOC);
 	    }
 	  }
 	} catch (Exception $e) {
-	  $_SESSION['message'] = $e->GetMessage();
-	  $_SESSION['type'] = 'danger';
+	  return $e->GetMessage();
   }
 	
 	close_database($database);
@@ -75,15 +73,17 @@ function save($table = null, $data = null) {
 	$sql = "INSERT INTO " . $table . "($columns)" . " VALUES " . "($values);";
   
 	try {
-	  $database->query($sql);
-  
-	  $_SESSION['message'] = 'Registro cadastrado com sucesso.';
-	  $_SESSION['type'] = 'success';
+	  $dbresponse = $database->query($sql);
+
+	  if($dbresponse) {
+		return "Data created";
+	  }
+	  else {
+		return "Can't create data";
+	  }
 	
 	} catch (Exception $e) { 
-	
-	  $_SESSION['message'] = 'Nao foi possivel realizar a operacao.';
-	  $_SESSION['type'] = 'danger';
+	  return $e->GetMessage();
 	} 
   
 	close_database($database);
@@ -107,15 +107,16 @@ function save($table = null, $data = null) {
 	$sql .= " WHERE id=" . $id . ";";
   
 	try {
-	  $database->query($sql);
-  
-	  $_SESSION['message'] = 'Registro atualizado com sucesso.';
-	  $_SESSION['type'] = 'success';
+	  $dbresponse = $database->query($sql);
+	  if ($dbresponse) {
+		return "Data updated";
+	  }
+	  else {
+		  return "Can't update data";
+	  }
   
 	} catch (Exception $e) { 
-  
-	  $_SESSION['message'] = 'Nao foi possivel realizar a operacao.';
-	  $_SESSION['type'] = 'danger';
+		return $e->GetMessage();
 	} 
   
 	close_database($database);
@@ -129,17 +130,17 @@ function remove($table = null, $id = null) {
 		if($id && $table) {
 
 			$sql = "DELETE FROM " . $table . " WHERE _id = " . $id;
-			$database->query($sql);
+			$dbresponse = $database->query($sql);
 	
-			if ($result = $database->query($sql)) {  
-				$_SESSION['message'] = 'Registro removido com sucesso.';
-				$_SESSION['type'] = 'success';
+			if ($dbresponse) {  
+				return "Remove query executed";
+			}
+			else {
+				return "Query not executed";
 			}
 		}
 	} catch (Exception $e) { 
-	
-	  $_SESSION['message'] = 'Nao foi possivel realizar a operacao.';
-	  $_SESSION['type'] = 'danger';
+		return $e->GetMessage();
 	} 
   
 	close_database($database);
