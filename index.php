@@ -63,6 +63,7 @@ if (isset($_REQUEST)) {
         return;
     }
 
+    // Validate if  HTTP Request Method is valid for the route
     if ($myRoutes[$model][$control] !== $method) {
 
         http_response_code(405);
@@ -73,22 +74,19 @@ if (isset($_REQUEST)) {
         return;
     }
 
+
+    // GET and DELETE calls a function sending the param received from the URL
     if ($method === 'GET' || $method === 'DELETE') {
         $response = call_user_func($controller, $param);
         echo $response;
         return;
     }
-
-    else if ($method === 'POST') {
-        //$response = call_user_func($controller, $params);
+    // POST and PUT receive params from php input and calls a function sending those params
+    else if ($method === 'POST' || $method === 'PUT') {
         $body = file_get_contents('php://input');
         $response = call_user_func($controller, $body);
         echo $response;
         return;
-    }
-
-    else if ($method === 'PUT') {
-
     }
     else {
         http_response_code(405);
