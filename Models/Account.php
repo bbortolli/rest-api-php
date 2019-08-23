@@ -18,7 +18,6 @@ function getAccount($id) {
     else {
         
         $data = find('accounts', $id);
-        var_dump(function_exists('find'));
 
         $response = array(
             'status' => '200 OK',
@@ -30,10 +29,13 @@ function getAccount($id) {
 
 function addAccount($params) {
     
+    $decodedParams = json_decode($params);
+    save('accounts', $decodedParams);
+
     $response = array(
         'status' => '200 OK',
         'statusMessage' => 'Account created',
-        'data' => json_decode($params));
+        'data' => $decodedParams);
     return json_encode($response);
 }
 
